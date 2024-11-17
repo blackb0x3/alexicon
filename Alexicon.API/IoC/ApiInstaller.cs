@@ -1,5 +1,6 @@
 using Alexicon.API.Domain.IoC;
 using Alexicon.API.Infrastructure.IoC;
+using Mapster;
 
 namespace Alexicon.API.IoC;
 
@@ -10,6 +11,7 @@ public class ApiInstaller
         InfrastructureInstaller.Install(services, config);
         DomainInstaller.Install(services, config);
 
+        services.AddMapster();
         services.AddMediator();
     }
 }
