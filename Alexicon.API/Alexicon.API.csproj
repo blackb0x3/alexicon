@@ -18,9 +18,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="IoC\" />
       <Folder Include="Models\Requests\" />
       <Folder Include="Models\Response\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Alexicon.API.Domain\Alexicon.API.Domain.csproj" />
+      <ProjectReference Include="..\Alexicon.API.Infrastructure\Alexicon.API.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,3 +1,6 @@
+using Mediator;
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,12 +25,27 @@ app.UseHttpsRedirection();
 
 /*
  * Example
- * app.MapGet("/test", async () =>
-    {
-        return Results.Ok(new { foo = "bar" });
-    })
-    .WithName("Test")
+ * app.MapPost("/test",
+        async (
+        ) =>
+        {
+            return Results.Ok(new { foo = "bar" });
+        })
+    .WithName("test")
     .WithOpenApi();
  */
+
+app.MapPost("/game",
+        async (
+            HttpRequest req,
+            [FromServices] IMediator mediator
+        ) =>
+        {
+            
+        })
+    .WithName("StartNewGame")
+    .WithOpenApi();
+
+
 
 await app.RunAsync();
