@@ -8,6 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
         <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
         <PackageReference Include="Mediator.SourceGenerator" Version="2.1.7">
           <PrivateAssets>all</PrivateAssets>
@@ -15,11 +17,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Models\Requests\" />
-      <Folder Include="Models\Response\" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
