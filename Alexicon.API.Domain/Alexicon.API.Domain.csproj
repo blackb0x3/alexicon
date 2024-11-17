@@ -13,4 +13,13 @@
       <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Adapters\" />
+      <Folder Include="IoC\" />
+      <Folder Include="Models\" />
+      <Folder Include="PrimaryPorts\" />
+      <Folder Include="Representations\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+
 </Project>
