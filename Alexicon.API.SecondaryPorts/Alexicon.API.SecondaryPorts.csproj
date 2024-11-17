@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
       <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
+      <PackageReference Include="OneOf" Version="3.0.271" />
     </ItemGroup>
 
 </Project>

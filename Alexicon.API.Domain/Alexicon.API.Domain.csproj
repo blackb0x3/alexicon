@@ -13,13 +13,12 @@
       <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+      <PackageReference Include="OneOf" Version="3.0.271" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Adapters\" />
       <Folder Include="Models\" />
-      <Folder Include="PrimaryPorts\" />
-      <Folder Include="Representations\" />
       <Folder Include="Services\" />
     </ItemGroup>
 
