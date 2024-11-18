@@ -1,5 +1,9 @@
+using Alexicon.API.Domain.PrimaryPorts.CreateGame;
+using Alexicon.API.Models.Requests;
+using MapsterMapper;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,25 +27,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-/*
- * Example
- * app.MapPost("/test",
-        async (
-        ) =>
-        {
-            return Results.Ok(new { foo = "bar" });
-        })
-    .WithName("test")
-    .WithOpenApi();
- */
-
 app.MapPost("/game",
+        [SwaggerOperation("")]
         async (
-            HttpRequest req,
-            [FromServices] IMediator mediator
+            HttpRequest httpReq,
+            [FromServices] IMediator mediator,
+            [FromServices] IMapper mapper,
+            [FromBody] CreateGameHttpRequest req
         ) =>
         {
-            
+            var request = mapper.Map<CreateGameRequest>(req);
+
+            var response = await mediator.Send(request);
         })
     .WithName("StartNewGame")
     .WithOpenApi();
