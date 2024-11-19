@@ -26,4 +26,10 @@
       <ProjectReference Include="..\Alexicon.API.Infrastructure\Alexicon.API.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Data\alexicon.db">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
