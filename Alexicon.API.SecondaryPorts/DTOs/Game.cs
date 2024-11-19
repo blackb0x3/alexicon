@@ -6,6 +6,8 @@ public class Game
     {
         Players = [];
     }
+    
+    public Guid Id { get; set; }
 
     public GameState State { get; set; }
     
