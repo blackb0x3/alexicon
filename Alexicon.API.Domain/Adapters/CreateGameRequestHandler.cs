@@ -2,9 +2,11 @@ using Alexicon.API.Domain.Models;
 using Alexicon.API.Domain.PrimaryPorts.CreateGame;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
+using Alexicon.API.SecondaryPorts.Commands.CreateGame;
 using Alexicon.API.SecondaryPorts.DTOs;
 using Alexicon.Extensions;
 using FluentValidation;
+using MapsterMapper;
 using Mediator;
 using OneOf;
 
@@ -13,10 +15,14 @@ namespace Alexicon.API.Domain.Adapters;
 internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, OneOf<GameRepresentation, ValidationRepresentation>>
 {
     private readonly IValidator<CreateGameRequest> _validator;
+    private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
-    public CreateGameRequestHandler(IValidator<CreateGameRequest> validator)
+    public CreateGameRequestHandler(IValidator<CreateGameRequest> validator, IMediator mediator, IMapper mapper)
     {
         _validator = validator;
+        _mediator = mediator;
+        _mapper = mapper;
     }
 
     public async ValueTask<OneOf<GameRepresentation, ValidationRepresentation>> Handle(CreateGameRequest request, CancellationToken cancellationToken)
@@ -29,13 +35,23 @@ internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, One
         }
 
         var players = CreateGamePlayers(request.Players);
-        
-        // TODO think about infrastructure
-        // need a way of storing in-progress games
-        // SQLite?
-        // LiteDB?
-        // Mongo in Azure?
-        // defo doing document storage, not faffing around with SQL / relational DBs for this project
+
+        var game = new Game
+        {
+            Players = players,
+            State = GameState.NewGame
+        };
+
+        var saveResult = await _mediator.Send(new CreateGameCommand(game), cancellationToken);
+
+        if (saveResult.IsOfType<GameNotSaved>())
+        {
+            throw new Exception($"Failed to create new game: {saveResult.AsT1.Reason}");
+        }
+
+        game.Id = saveResult.AsT0.GameId;
+
+        return _mapper.Map<GameRepresentation>(game);
     }
 
     private List<GamePlayer> CreateGamePlayers(Dictionary<string, NewPlayer> newPlayers)
