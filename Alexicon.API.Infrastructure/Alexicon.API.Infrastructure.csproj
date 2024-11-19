@@ -10,6 +10,13 @@
       <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
       <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
       <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
       <PackageReference Include="OneOf" Version="3.0.271" />
@@ -18,9 +25,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Adapters\" />
       <Folder Include="Models\" />
       <Folder Include="Services\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Alexicon.API.SecondaryPorts\Alexicon.API.SecondaryPorts.csproj" />
     </ItemGroup>
 
 </Project>
