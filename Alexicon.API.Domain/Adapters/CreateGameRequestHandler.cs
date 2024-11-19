@@ -49,7 +49,7 @@ internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, One
             throw new Exception($"Failed to create new game: {saveResult.AsT1.Reason}");
         }
 
-        game.Id = saveResult.AsT0.GameId;
+        game.Id = saveResult.AsT0.Game.Id;
 
         return _mapper.Map<GameRepresentation>(game);
     }
