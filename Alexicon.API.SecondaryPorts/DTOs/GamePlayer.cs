@@ -9,9 +9,5 @@ public class GamePlayer
     
     public Player Player { get; set; }
 
-    public string Username { get; set; }
-
-    public string DisplayName { get; set; }
-
     public IReadOnlyCollection<char> CurrentRack { get; set; }
 }
