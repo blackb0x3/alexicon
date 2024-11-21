@@ -2,13 +2,21 @@ namespace Alexicon.API.SecondaryPorts.DTOs;
 
 public class GameMove
 {
-    public string Player { get; set; }
+    public GameMove()
+    {
+        LettersUsed = [];
+        WordsCreated = [];
+    }
 
-    public List<char> LettersUsed { get; set; }
-
-    public List<string> WordsCreated { get; set; }
+    public GamePlayer Player { get; set; }
     
-    public Tuple<string, string> Location { get; set; }
+    public short LocationX { get; set; }
 
-    public int Score { get; set; }
+    public short LocationY { get; set; }
+
+    public short Score { get; set; }
+    
+    public IReadOnlyCollection<char> LettersUsed { get; set; }
+
+    public IReadOnlyCollection<string> WordsCreated { get; set; }
 }

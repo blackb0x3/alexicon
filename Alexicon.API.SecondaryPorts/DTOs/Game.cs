@@ -5,11 +5,12 @@ public class Game
     public Game()
     {
         Players = [];
+        MovesPlayed = [];
     }
     
     public Guid Id { get; set; }
 
-    public GameState State { get; set; }
-    
-    public List<GamePlayer> Players { get; set; }
+    public IReadOnlyCollection<GamePlayer> Players { get; set; }
+
+    public IReadOnlyCollection<GameMove> MovesPlayed { get; set; }
 }

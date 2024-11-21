@@ -4,12 +4,14 @@ public class GamePlayer
 {
     public GamePlayer()
     {
-        CurrentRack = new List<char>();
+        CurrentRack = [];
     }
+    
+    public Player Player { get; set; }
 
     public string Username { get; set; }
 
     public string DisplayName { get; set; }
 
-    public List<char> CurrentRack { get; set; }
+    public IReadOnlyCollection<char> CurrentRack { get; set; }
 }
