@@ -9,5 +9,7 @@ public class AlexiconContextFactory : IDbContextFactory<AlexiconContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<AlexiconContext>()
             .UseSqlite(DatabasePathHelper.GetSqliteConnectionString());
+
+        return new AlexiconContext(optionsBuilder.Options);
     }
 }
