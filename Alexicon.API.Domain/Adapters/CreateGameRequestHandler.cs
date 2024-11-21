@@ -83,6 +83,7 @@ internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, One
         // to ensure randomness
         bag.ShuffleFiveTimes();
 
+        // every game starts with 7 letters in each player's rack
         return bag.PopRandomElements(7);
     }
 }
