@@ -38,8 +38,7 @@ internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, One
 
         var game = new Game
         {
-            Players = players,
-            State = GameState.NewGame
+            Players = players
         };
 
         var saveResult = await _mediator.Send(new CreateGameCommand(game), cancellationToken);
