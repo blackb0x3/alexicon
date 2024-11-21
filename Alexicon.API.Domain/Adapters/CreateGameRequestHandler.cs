@@ -62,9 +62,12 @@ internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, One
         {
             var gamePlayer = new GamePlayer
             {
-                Username = newPlayer.Key,
-                DisplayName = newPlayer.Value.DisplayName,
-                CurrentRack = newPlayer.Value.StartingRack
+                CurrentRack = newPlayer.Value.StartingRack,
+                Player = new Player
+                {
+                    Username = newPlayer.Value.Username,
+                    DisplayName = newPlayer.Value.DisplayName
+                }
             };
 
             if (!gamePlayer.CurrentRack.Any())
