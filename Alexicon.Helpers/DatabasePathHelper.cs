@@ -2,7 +2,7 @@
 
 public class DatabasePathHelper
 {
-    private const string DbFileName = "firebotproxy.db";
+    private const string DbFileName = "alexicon.db";
 
     public static string DbFilePath => Path.Join(UserHomeFolder, DbFileName);
 
