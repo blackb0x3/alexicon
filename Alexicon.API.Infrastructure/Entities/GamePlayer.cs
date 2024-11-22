@@ -2,9 +2,11 @@ namespace Alexicon.API.Infrastructure.Entities;
 
 public class GamePlayer : BaseEntity
 {
+    public Guid Id { get; set; }
+
     public Guid GameId { get; set; }
 
-    public Guid PlayerId { get; set; }
+    public string PlayerUsername { get; set; }
 
     public string CurrentRackForDb { get; set; }
 

@@ -8,7 +8,7 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
     public void Configure(EntityTypeBuilder<GamePlayer> builder)
     {
         // Composite key using IDs
-        builder.HasKey(gp => new { gp.GameId, gp.PlayerId });
+        builder.HasKey(gp => gp.Id);
 
         // Foreign key relationships
         builder
@@ -20,7 +20,7 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
         builder
             .HasOne(gp => gp.Player)
             .WithMany()
-            .HasForeignKey(gp => gp.PlayerId)
+            .HasForeignKey(gp => gp.PlayerUsername)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Property configuration
