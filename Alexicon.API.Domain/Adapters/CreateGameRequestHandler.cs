@@ -53,7 +53,7 @@ public class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, OneOf
         return _mapper.Map<GameRepresentation>(game);
     }
 
-    private List<GamePlayer> CreateGamePlayers(Dictionary<string, NewPlayer> newPlayers)
+    private List<GamePlayer> CreateGamePlayers(List<NewPlayer> newPlayers)
     {
         var gamePlayers = new List<GamePlayer>();
         var bag = Scrabble.StartingBag.ToList();
@@ -62,11 +62,11 @@ public class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, OneOf
         {
             var gamePlayer = new GamePlayer
             {
-                CurrentRack = newPlayer.Value.StartingRack,
+                CurrentRack = newPlayer.StartingRack,
                 Player = new Player
                 {
-                    Username = newPlayer.Value.Username,
-                    DisplayName = newPlayer.Value.DisplayName
+                    Username = newPlayer.Username,
+                    DisplayName = newPlayer.DisplayName
                 }
             };
 

@@ -7,7 +7,7 @@ public class CreateGameRequestValidator : AbstractValidator<CreateGameRequest>
 {
     public CreateGameRequestValidator()
     {
-        RuleForEach(req => req.Players.Values)
+        RuleForEach(req => req.Players)
             .SetValidator(new PlayerValidator());
     }
 }
