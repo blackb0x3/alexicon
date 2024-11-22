@@ -2,23 +2,23 @@ using Alexicon.API.Domain.Models;
 using Alexicon.API.Domain.PrimaryPorts.CreateGame;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
+using Alexicon.API.Domain.Services.Validators;
 using Alexicon.API.SecondaryPorts.Commands.CreateGame;
 using Alexicon.API.SecondaryPorts.DTOs;
 using Alexicon.Extensions;
-using FluentValidation;
 using MapsterMapper;
 using Mediator;
 using OneOf;
 
 namespace Alexicon.API.Domain.Adapters;
 
-internal class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, OneOf<GameRepresentation, ValidationRepresentation>>
+public class CreateGameRequestHandler : IRequestHandler<CreateGameRequest, OneOf<GameRepresentation, ValidationRepresentation>>
 {
-    private readonly IValidator<CreateGameRequest> _validator;
+    private readonly CreateGameRequestValidator _validator;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public CreateGameRequestHandler(IValidator<CreateGameRequest> validator, IMediator mediator, IMapper mapper)
+    public CreateGameRequestHandler(CreateGameRequestValidator validator, IMediator mediator, IMapper mapper)
     {
         _validator = validator;
         _mediator = mediator;

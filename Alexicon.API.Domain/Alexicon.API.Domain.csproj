@@ -17,10 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Alexicon.API.SecondaryPorts\Alexicon.API.SecondaryPorts.csproj" />
       <ProjectReference Include="..\Alexicon.Extensions\Alexicon.Extensions.csproj" />
     </ItemGroup>
