@@ -12,6 +12,6 @@ public class ApiInstaller
         DomainInstaller.Install(services, config);
 
         services.AddMapster();
-        services.AddMediator();
+        services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
     }
 }
