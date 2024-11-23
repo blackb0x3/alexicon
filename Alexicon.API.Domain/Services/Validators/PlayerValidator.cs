@@ -10,18 +10,19 @@ public class PlayerValidator : AbstractValidator<NewPlayer>
     {
         RuleFor(np => np.Username)
             .NotEmpty()
-            .WithMessage(" is required.");
+            .WithMessage("Is required.");
 
         RuleFor(np => np.DisplayName)
             .NotEmpty()
-            .WithMessage(" is required.");
+            .WithMessage("Is required.");
 
         RuleFor(np => np.StartingRack)
-            .Must(ContainCorrectNumberOfTiles);
+            .Must(ContainCorrectNumberOfTiles)
+            .WithMessage("Should be empty or contain exactly 7 tiles.");
 
         RuleForEach(np => np.StartingRack)
             .Must(BeValidScrabbleCharacter)
-            .WithMessage(" is not a valid Scrabble tile.");
+            .WithMessage("Should be letter A - Z or `?` for blanks.");
     }
 
     private static bool ContainCorrectNumberOfTiles(List<char> rack)
