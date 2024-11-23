@@ -12,6 +12,8 @@ public class DomainInstaller
     public static void Install(IServiceCollection services, IConfiguration config)
     {
         services.AddValidatorsFromAssembly(DomainAssembly);
+        
+        AddMapsterConfigurations();
     }
 
     private static void AddMapsterConfigurations()
