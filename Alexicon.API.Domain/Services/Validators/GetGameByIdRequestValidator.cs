@@ -12,7 +12,7 @@ public class GetGameByIdRequestValidator : AbstractValidator<GetGameByIdRequest>
             .WithMessage("Should be a GUID.");
     }
 
-    private bool BeGuid(string attempt)
+    private static bool BeGuid(string attempt)
     {
         return Guid.TryParse(attempt, out _);
     }
