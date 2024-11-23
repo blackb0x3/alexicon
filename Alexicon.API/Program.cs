@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Alexicon.API.Domain.PrimaryPorts.ApplyMove;
 using Alexicon.API.Domain.PrimaryPorts.CreateGame;
 using Alexicon.API.Domain.PrimaryPorts.GetGameById;
 using Alexicon.API.Domain.Representations;
@@ -89,6 +90,30 @@ app.MapPost("/game",
     .WithName("StartNewGame")
     .WithOpenApi();
 
+app.MapPut("/game/{gameId}/move",
+        [SwaggerOperation("Add a player's move to a game.")]
+        [SwaggerResponse(StatusCodes.Status200OK, Outcomes.Ok, typeof(GameRepresentation))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Outcomes.ValidationFailed, typeof(ValidationRepresentation))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Outcomes.NotFound, typeof(EntityNotFoundRepresentation))]
+        async (
+            HttpRequest httpReq,
+            [FromServices] IMediator mediator,
+            [FromServices] IMapper mapper,
+            [FromRoute] string gameId,
+            [FromBody] ApplyMoveHttpRequest requestModel
+        ) =>
+        {
+            var request = new ApplyMoveRequest(gameId, requestModel.Player, requestModel.LettersUsed, requestModel.Location, requestModel.NewRack);
 
+            var response = await mediator.Send(request);
+
+            return response.Match<IResult>(
+                game => Results.Ok(game),
+                invalidRequest => Results.BadRequest(invalidRequest),
+                gameNotFound => Results.NotFound(gameNotFound)
+            );
+        })
+    .WithName("ApplyMoveToGame")
+    .WithOpenApi();
 
 await app.RunAsync();
