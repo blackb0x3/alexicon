@@ -25,5 +25,7 @@ public class GamePlayerConfiguration : IEntityTypeConfiguration<GamePlayer>
 
         // Property configuration
         builder.Property(gp => gp.CurrentRackForDb).IsRequired();
+
+        builder.Ignore(gp => gp.CurrentRack);
     }
 }

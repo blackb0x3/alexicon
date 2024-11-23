@@ -3,6 +3,7 @@ using System;
 using Alexicon.API.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexicon.API.Infrastructure.Migrations
 {
     [DbContext(typeof(AlexiconContext))]
-    partial class AlexiconContextModelSnapshot : ModelSnapshot
+    [Migration("20241123101755_Remove_Enumerable_Columns")]
+    partial class Remove_Enumerable_Columns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");

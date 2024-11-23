@@ -26,5 +26,8 @@ public class GameMoveConfiguration : IEntityTypeConfiguration<GameMove>
         // Property configurations
         builder.Property(gm => gm.LettersUsedForDb).IsRequired();
         builder.Property(gm => gm.WordsCreatedForDb).IsRequired();
+
+        builder.Ignore(gm => gm.LettersUsed);
+        builder.Ignore(gm => gm.WordsCreated);
     }
 }
