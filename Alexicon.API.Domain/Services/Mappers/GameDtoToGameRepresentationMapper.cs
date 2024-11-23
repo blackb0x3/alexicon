@@ -12,6 +12,7 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
     {
         var rep = new GameRepresentation
         {
+            Id = src.Id,
             State = MapGameState(src),
             Players = MapGamePlayers(src)
         };

@@ -7,6 +7,8 @@ public class GameRepresentation
         Players = new Dictionary<string, GamePlayerRepresentation>();
     }
     
+    public Guid Id { get; set; }
+    
     public GameStateRepresentation State { get; set; }
 
     public Dictionary<string, GamePlayerRepresentation> Players { get; set; }
