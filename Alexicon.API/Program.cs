@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Alexicon.API.Domain.PrimaryPorts.CreateGame;
+using Alexicon.API.Domain.PrimaryPorts.GetGameById;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
 using Alexicon.API.Domain.Services.Converters;
@@ -39,6 +40,31 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/game/{gameId}",
+        [SwaggerOperation("Retrieve a Scrabble game using its ID.")]
+        [SwaggerResponse(StatusCodes.Status200OK, Outcomes.Ok, typeof(GameRepresentation))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Outcomes.ValidationFailed, typeof(ValidationRepresentation))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Outcomes.NotFound, typeof(EntityNotFoundRepresentation))]
+        async (
+            HttpRequest httpReq,
+            [FromServices] IMediator mediator,
+            [FromServices] IMapper mapper,
+            [FromRoute] string gameId
+        ) =>
+        {
+            var request = new GetGameByIdRequest(gameId);
+
+            var response = await mediator.Send(request);
+
+            return response.Match<IResult>(
+                game => Results.Ok(game),
+                invalidRequest => Results.BadRequest(invalidRequest),
+                notFound => Results.NotFound(notFound)
+            );
+        })
+    .WithName("GetGameById")
+    .WithOpenApi();
 
 app.MapPost("/game",
         [SwaggerOperation("Create a new Scrabble game.")]
