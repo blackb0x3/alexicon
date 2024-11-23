@@ -2,6 +2,7 @@ using System.Text.Json;
 using Alexicon.API.Domain.PrimaryPorts.CreateGame;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
+using Alexicon.API.Domain.Services.Converters;
 using Alexicon.API.IoC;
 using Alexicon.API.Models.Requests;
 using Alexicon.API.Models.Response;
@@ -20,6 +21,7 @@ builder.Services.Configure<JsonOptions>(opts =>
 {
     opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    opts.JsonSerializerOptions.Converters.Add(new ByteArrayToJsonArrayConverter());
 });
 ApiInstaller.Install(builder.Services, builder.Configuration);
 
