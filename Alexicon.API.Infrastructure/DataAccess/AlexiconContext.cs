@@ -8,6 +8,12 @@ public class AlexiconContext : DbContext
     public AlexiconContext(DbContextOptions<AlexiconContext> options) : base(options) { }
 
     public DbSet<Game> Games { get; set; }
+    
+    public DbSet<GameMove> GameMoves { get; set; }
+    
+    public DbSet<GamePlayer> GamePlayers { get; set; }
+
+    public DbSet<Player> Players { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
