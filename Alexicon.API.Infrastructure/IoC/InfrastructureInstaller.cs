@@ -23,6 +23,9 @@ public class InfrastructureInstaller
 
     private static void AddMapsterConfigurations()
     {
+        TypeAdapterConfig<Entities.Player, SecondaryPorts.DTOs.Player>.NewConfig()
+            .PreserveReference(true);
+
         TypeAdapterConfig<Entities.GamePlayer, SecondaryPorts.DTOs.GamePlayer>.NewConfig()
             .Map(dest => dest.Player, src => src.Player)
             .Map(dest => dest.CurrentRack, src => src.CurrentRack)
