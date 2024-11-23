@@ -18,4 +18,16 @@ public class ScrabbleHelper
 
         return (columnIndex, --rowIndex);
     }
+
+    public static bool IsValidTileNotation(string notation)
+    {
+        var columnLetter = char.ToUpper(notation[0]);
+
+        if (!char.IsAsciiLetterUpper(columnLetter))
+        {
+            return false;
+        }
+
+        return int.TryParse(notation[1..], out _);
+    }
 }
