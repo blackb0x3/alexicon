@@ -10,9 +10,13 @@ public class GameMove
 
     public GamePlayer Player { get; set; }
     
-    public short LocationX { get; set; }
+    public short FirstLetterX { get; set; }
 
-    public short LocationY { get; set; }
+    public short FirstLetterY { get; set; }
+
+    public short LastLetterX { get; set; }
+
+    public short LastLetterY { get; set; }
 
     public short Score { get; set; }
     
