@@ -53,7 +53,7 @@ public class CreateGameCommandHandler : ICommandHandler<CreateGameCommand, OneOf
                 Game = gameDto
             };
         }
-        catch (UniqueConstraintException uce)
+        catch
         {
             await HandleRollback(transaction, cancellationToken);
 
