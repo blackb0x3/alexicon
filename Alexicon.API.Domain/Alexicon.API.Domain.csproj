@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Alexicon.API.SecondaryPorts\Alexicon.API.SecondaryPorts.csproj" />
       <ProjectReference Include="..\Alexicon.Extensions\Alexicon.Extensions.csproj" />
+      <ProjectReference Include="..\Alexicon.Helpers\Alexicon.Helpers.csproj" />
     </ItemGroup>
 
 </Project>
