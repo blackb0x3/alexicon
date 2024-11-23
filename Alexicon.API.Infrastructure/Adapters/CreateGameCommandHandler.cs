@@ -29,6 +29,17 @@ public class CreateGameCommandHandler : ICommandHandler<CreateGameCommand, OneOf
         {
             var gameEntity = _mapper.Map<Game>(command.Game);
 
+            // Ensure duplicate players are not inserted
+            foreach (var gamePlayer in gameEntity.Players)
+            {
+                var existingPlayer = await _context.Players.SingleOrDefaultAsync(p => p.Username == gamePlayer.Player.Username, cancellationToken);
+
+                if (existingPlayer != null)
+                {
+                    gamePlayer.Player = existingPlayer;
+                }
+            }
+
             await _context.AddAsync(gameEntity, cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
