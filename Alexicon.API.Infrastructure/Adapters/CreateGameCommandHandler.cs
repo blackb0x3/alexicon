@@ -33,6 +33,8 @@ public class CreateGameCommandHandler : ICommandHandler<CreateGameCommand, OneOf
 
             await _context.SaveChangesAsync(cancellationToken);
 
+            await transaction.CommitAsync(cancellationToken);
+
             var gameDto = _mapper.Map<SecondaryPorts.DTOs.Game>(gameEntity);
 
             return new GameSaved
