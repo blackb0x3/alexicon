@@ -6,18 +6,8 @@ public class GameRepresentation
     {
         Players = new Dictionary<string, GamePlayerRepresentation>();
     }
+    
+    public GameStateRepresentation State { get; set; }
 
     public Dictionary<string, GamePlayerRepresentation> Players { get; set; }
-}
-
-public class GamePlayerRepresentation
-{
-    public GamePlayerRepresentation()
-    {
-        CurrentRack = [];
-    }
-
-    public string DisplayName { get; set; }
-
-    public List<char> CurrentRack { get; set; }
 }
