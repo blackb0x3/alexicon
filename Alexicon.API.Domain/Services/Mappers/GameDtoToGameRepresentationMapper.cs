@@ -12,14 +12,14 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
     {
         var rep = new GameRepresentation
         {
-            State = MapGameState(src.MovesPlayed),
+            State = MapGameState(src),
             Players = MapGamePlayers(src)
         };
 
         return rep;
     }
 
-    private static GameStateRepresentation MapGameState(IReadOnlyCollection<GameMove> movesPlayed)
+    private static GameStateRepresentation MapGameState(Game game)
     {
         var gameState = new GameStateRepresentation
         {
@@ -28,9 +28,17 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
             Bag = Scrabble.StartingBag.ToList()
         };
 
-        foreach (var move in movesPlayed)
+        foreach (var move in game.MovesPlayed)
         {
             MapGameMove(move, gameState);
+        }
+
+        foreach (var player in game.Players)
+        {
+            foreach (var letter in player.CurrentRack)
+            {
+                gameState.Bag.Remove(letter);
+            }
         }
 
         return gameState;
