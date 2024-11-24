@@ -49,7 +49,7 @@ public class ApplyMoveRequestValidator : AbstractValidator<ApplyMoveRequest>
 
     private bool BeEmptyOrContainCorrectNumberOfTiles(List<char> chars, int expectedLength)
     {
-        return chars.Count == 0 || chars.Count == expectedLength;
+        return chars.Count == 0 || ContainCorrectNumberOfTiles(chars, expectedLength, expectedLength);
     }
 
     private static bool BeValidScrabbleCharacter(char charToValidate)
