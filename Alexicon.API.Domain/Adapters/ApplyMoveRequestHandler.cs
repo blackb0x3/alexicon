@@ -11,20 +11,22 @@ namespace Alexicon.API.Domain.Adapters;
 
 public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>>
 {
-    private readonly ApplyMoveRequestValidator _validator;
+    private readonly ApplyMoveRequestValidator _requestValidator;
     private readonly IMediator _mediator;
+    private readonly INewMoveValidator _newMoveValidator;
     private readonly IMapper _mapper;
 
-    public ApplyMoveRequestHandler(ApplyMoveRequestValidator validator, IMediator mediator, IMapper mapper)
+    public ApplyMoveRequestHandler(ApplyMoveRequestValidator requestValidator, IMediator mediator, INewMoveValidator newMoveValidator, IMapper mapper)
     {
-        _validator = validator;
+        _requestValidator = requestValidator;
         _mediator = mediator;
+        _newMoveValidator = newMoveValidator;
         _mapper = mapper;
     }
 
     public async ValueTask<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>> Handle(ApplyMoveRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
