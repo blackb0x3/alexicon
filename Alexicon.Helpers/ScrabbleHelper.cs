@@ -28,9 +28,29 @@ public class ScrabbleHelper
             return false;
         }
 
-        return int.TryParse(notation[1..], out _);
+        var parsedRow = int.TryParse(notation[1..], out var rowIndex);
+
+        if (!parsedRow)
+        {
+            return false;
+        }
+
+        return rowIndex is >= 1 and <= 15;
     }
-    
+
+    public static List<(short, short)> GetLetterPath((string, string) location)
+    {
+        return GetLetterPath(location.Item1, location.Item2);
+    }
+
+    public static List<(short, short)> GetLetterPath(string firstLetterNotation, string lastLetterNotation)
+    {
+        var firstLetterLocation = MapToArrayIndex(firstLetterNotation);
+        var lastLetterLocation = MapToArrayIndex(lastLetterNotation);
+
+        return GetLetterPath(firstLetterLocation.x, firstLetterLocation.y, lastLetterLocation.x, lastLetterLocation.y);
+    }
+
     public static List<(short, short)> GetLetterPath(short x1, short y1, short x2, short y2)
     {
         if (x1 == x2)
