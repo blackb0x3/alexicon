@@ -16,8 +16,10 @@ public class PlayerValidator : AbstractValidator<NewPlayer>
             .NotEmpty()
             .WithMessage("Is required.");
 
+        // All Scrabble games start with 7 tiles on each player's rack. If no letters are present, this is also
+        // considered valid as we will generate a new rack in the API.
         RuleFor(np => np.StartingRack)
-            .Must(ContainCorrectNumberOfTiles)
+            .Must(rack => BeEmptyOrContainCorrectNumberOfTiles(rack, 7))
             .WithMessage("Should be empty or contain exactly 7 tiles.");
 
         RuleForEach(np => np.StartingRack)
@@ -25,12 +27,9 @@ public class PlayerValidator : AbstractValidator<NewPlayer>
             .WithMessage("Should be letter A - Z or `?` for blanks.");
     }
 
-    private static bool ContainCorrectNumberOfTiles(List<char> rack)
+    private bool BeEmptyOrContainCorrectNumberOfTiles(List<char> chars, int expectedLength)
     {
-        // All Scrabble games start with 7 tiles on each player's rack.
-        // If no letters are present, this is also considered valid as
-        // we will generate a new rack in the API.
-        return rack.Count is 0 or 7;
+        return chars.Count == 0 || chars.Count == expectedLength;
     }
 
     private static bool BeValidScrabbleCharacter(char charToValidate)
