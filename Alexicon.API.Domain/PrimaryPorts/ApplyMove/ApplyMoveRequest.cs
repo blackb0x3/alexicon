@@ -11,4 +11,29 @@ public record ApplyMoveRequest(
     List<char> LettersUsed,
     Tuple<string, string> Location,
     List<char> NewRack
-) : IRequest<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation>>;
+) : IRequest<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>>;
+
+
+public class InvalidMove
+{
+    public InvalidMove()
+    {
+        WordsCreated = new List<WordCreated>();
+        AttemptedLetters = new List<char>();
+    }
+    
+    public List<WordCreated> WordsCreated { get; set; }
+
+    public List<char> AttemptedLetters { get; set; }
+
+    public IEnumerable<string> ValidWords => WordsCreated.Where(wc => wc.IsValid).Select(wc => wc.Word);
+
+    public IEnumerable<string> InvalidWords => WordsCreated.Where(wc => !wc.IsValid).Select(wc => wc.Word);
+}
+
+public class WordCreated
+{
+    public string Word { get; set; }
+    
+    public bool IsValid { get; set; }
+}

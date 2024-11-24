@@ -110,7 +110,8 @@ app.MapPut("/game/{gameId}/move",
             return response.Match<IResult>(
                 game => Results.Ok(game),
                 invalidRequest => Results.BadRequest(invalidRequest),
-                gameNotFound => Results.NotFound(gameNotFound)
+                gameNotFound => Results.NotFound(gameNotFound),
+                invalidMove => Results.UnprocessableEntity(invalidMove)
             );
         })
     .WithName("ApplyMoveToGame")

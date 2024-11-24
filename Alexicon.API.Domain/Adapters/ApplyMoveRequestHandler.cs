@@ -9,7 +9,7 @@ using OneOf;
 
 namespace Alexicon.API.Domain.Adapters;
 
-public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation>>
+public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>>
 {
     private readonly ApplyMoveRequestValidator _validator;
     private readonly IMediator _mediator;
@@ -22,7 +22,7 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
         _mapper = mapper;
     }
 
-    public async ValueTask<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation>> Handle(ApplyMoveRequest request, CancellationToken cancellationToken)
+    public async ValueTask<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>> Handle(ApplyMoveRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
