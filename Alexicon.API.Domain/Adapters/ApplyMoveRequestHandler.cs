@@ -2,6 +2,7 @@ using Alexicon.API.Domain.PrimaryPorts.ApplyMove;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
 using Alexicon.API.Domain.Services.Validators;
+using Alexicon.API.SecondaryPorts.Queries.GetGameById;
 using MapsterMapper;
 using Mediator;
 using OneOf;
@@ -23,6 +24,19 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
 
     public async ValueTask<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation>> Handle(ApplyMoveRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            return new ValidationRepresentation(validationResult);
+        }
+
+        var gameGuid = Guid.Parse(request.GameId);
+        var game = await _mediator.Send(new GetGameByIdQuery(gameGuid), cancellationToken);
+
+        if (game is null)
+        {
+            return new EntityNotFoundRepresentation("Unable to find game with requested ID.", request.GameId);
+        }
     }
 }
