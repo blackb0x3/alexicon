@@ -6,7 +6,7 @@ public class ApplyMoveHttpRequest
 
     public List<char> LettersUsed { get; set; }
     
-    public Tuple<string, string> Location { get; set; }
+    public (string, string) Location { get; set; }
 
     public List<char> NewRack { get; set; }
 }

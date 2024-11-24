@@ -42,7 +42,7 @@ public class ApplyMoveRequestValidator : AbstractValidator<ApplyMoveRequest>
         return chars.Count >= min && chars.Count <= maxInclusive;
     }
 
-    private bool UseValidScrabbleTileNotations(Tuple<string, string> locationToCheck)
+    private bool UseValidScrabbleTileNotations((string, string) locationToCheck)
     {
         return ScrabbleHelper.IsValidTileNotation(locationToCheck.Item1) && ScrabbleHelper.IsValidTileNotation(locationToCheck.Item2);
     }

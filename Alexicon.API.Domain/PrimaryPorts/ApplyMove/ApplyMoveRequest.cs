@@ -9,6 +9,6 @@ public record ApplyMoveRequest(
     string GameId,
     string Player,
     List<char> LettersUsed,
-    Tuple<string, string> Location,
+    (string, string) Location,
     List<char> NewRack
 ) : IRequest<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>>;

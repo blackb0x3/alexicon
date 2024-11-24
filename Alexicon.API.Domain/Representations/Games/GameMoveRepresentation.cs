@@ -8,7 +8,7 @@ public class GameMoveRepresentation
     
     public List<string> WordsCreated { get; set; }
     
-    public Tuple<string, string> Location { get; set; }
+    public (string, string) Location { get; set; }
 
     public short Score { get; set; }
 }

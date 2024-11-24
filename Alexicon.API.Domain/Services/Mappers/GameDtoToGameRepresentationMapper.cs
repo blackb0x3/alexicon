@@ -55,7 +55,7 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
             PlayerUsername = move.Player.Player.Username,
             LettersUsed = move.LettersUsed.ToList(),
             WordsCreated = move.WordsCreated.ToList(),
-            Location = new Tuple<string, string>(firstTileNotation, lastTileNotation),
+            Location = (firstTileNotation, lastTileNotation),
             Score = move.Score
         };
 
@@ -117,7 +117,7 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
         return dict;
     }
 
-    private static List<Tuple<short, short>> GetLetterPath(short x1, short y1, short x2, short y2)
+    private static List<(short, short)> GetLetterPath(short x1, short y1, short x2, short y2)
     {
         if (x1 == x2)
         {
@@ -132,13 +132,13 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
         throw new Exception("Unable to determine letter path from coords.");
     }
 
-    private static List<Tuple<short, short>> GetLetterPath(short origin, short start, short end)
+    private static List<(short, short)> GetLetterPath(short origin, short start, short end)
     {
-        var path = new List<Tuple<short, short>>();
+        var path = new List<(short, short)>();
 
         for (var i = start; i <= end; i++)
         {
-            path.Add(new Tuple<short, short>(origin, i));
+            path.Add((origin, i));
         }
 
         return path;
