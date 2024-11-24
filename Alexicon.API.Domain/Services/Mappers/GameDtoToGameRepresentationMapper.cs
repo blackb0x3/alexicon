@@ -68,7 +68,7 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
 
     private static void UpdateGameBoard(GameMove move, GameStateRepresentation gameState)
     {
-        var letterPath = GetLetterPath(move.FirstLetterX, move.FirstLetterY, move.LastLetterX, move.LastLetterY);
+        var letterPath = ScrabbleHelper.GetLetterPath(move.FirstLetterX, move.FirstLetterY, move.LastLetterX, move.LastLetterY);
         var lettersArray = move.LettersUsed.ToArray();
         var letterPointer = -1;
 
@@ -115,32 +115,5 @@ public class GameDtoToGameRepresentationMapper : IAlexiconMapper<Game, GameRepre
         }
 
         return dict;
-    }
-
-    private static List<(short, short)> GetLetterPath(short x1, short y1, short x2, short y2)
-    {
-        if (x1 == x2)
-        {
-            return GetLetterPath(x1, y1, y2);
-        }
-
-        if (y1 == y2)
-        {
-            return GetLetterPath(y1, x1, x2);
-        }
-
-        throw new Exception("Unable to determine letter path from coords.");
-    }
-
-    private static List<(short, short)> GetLetterPath(short origin, short start, short end)
-    {
-        var path = new List<(short, short)>();
-
-        for (var i = start; i <= end; i++)
-        {
-            path.Add((origin, i));
-        }
-
-        return path;
     }
 }

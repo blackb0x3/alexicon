@@ -30,4 +30,31 @@ public class ScrabbleHelper
 
         return int.TryParse(notation[1..], out _);
     }
+    
+    public static List<(short, short)> GetLetterPath(short x1, short y1, short x2, short y2)
+    {
+        if (x1 == x2)
+        {
+            return GetLetterPath(x1, y1, y2);
+        }
+
+        if (y1 == y2)
+        {
+            return GetLetterPath(y1, x1, x2);
+        }
+
+        throw new Exception("Unable to determine letter path from coords.");
+    }
+
+    private static List<(short, short)> GetLetterPath(short origin, short start, short end)
+    {
+        var path = new List<(short, short)>();
+
+        for (var i = start; i <= end; i++)
+        {
+            path.Add((origin, i));
+        }
+
+        return path;
+    }
 }
