@@ -5,4 +5,6 @@ public class WordCreated
     public string Word { get; set; }
     
     public bool IsValid { get; set; }
+    
+    public string Reason { get; set; }
 }
