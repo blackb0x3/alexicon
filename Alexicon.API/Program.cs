@@ -5,6 +5,7 @@ using Alexicon.API.Domain.PrimaryPorts.GetGameById;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
 using Alexicon.API.Domain.Services.Converters;
+using Alexicon.API.Extensions;
 using Alexicon.API.IoC;
 using Alexicon.API.Models.Requests;
 using Alexicon.API.Models.Response;
@@ -94,7 +95,9 @@ app.MapPut("/game/{gameId}/move",
         [SwaggerOperation("Add a player's move to a game.")]
         [SwaggerResponse(StatusCodes.Status200OK, Outcomes.Ok, typeof(GameRepresentation))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Outcomes.ValidationFailed, typeof(ValidationRepresentation))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden, Outcomes.Forbidden, typeof(PlayerNotInGame))]
         [SwaggerResponse(StatusCodes.Status404NotFound, Outcomes.NotFound, typeof(EntityNotFoundRepresentation))]
+        [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, Outcomes.UnprocessableRequest, typeof(InvalidMove))]
         async (
             HttpRequest httpReq,
             [FromServices] IMediator mediator,
@@ -111,6 +114,7 @@ app.MapPut("/game/{gameId}/move",
                 game => Results.Ok(game),
                 invalidRequest => Results.BadRequest(invalidRequest),
                 gameNotFound => Results.NotFound(gameNotFound),
+                playerNotInGame => MoreResults.Forbidden(playerNotInGame),
                 invalidMove => Results.UnprocessableEntity(invalidMove)
             );
         })

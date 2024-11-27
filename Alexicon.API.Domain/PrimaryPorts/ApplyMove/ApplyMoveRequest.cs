@@ -11,4 +11,4 @@ public record ApplyMoveRequest(
     List<char> LettersUsed,
     (string, string) Location,
     List<char> NewRack
-) : IRequest<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, InvalidMove>>;
+) : IRequest<OneOf<GameRepresentation, ValidationRepresentation, EntityNotFoundRepresentation, PlayerNotInGame, InvalidMove>>;
