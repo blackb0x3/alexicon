@@ -17,8 +17,12 @@ public static class Outcomes
     public const string ModelBindingFailed = "ModelBindingFailed";
 
     public const string ValidationFailed = "ValidationFailed";
+
+    public const string Forbidden = "Forbidden";
     
     public const string NotFound = "NotFound";
+
+    public const string UnprocessableRequest = "UnprocessableRequest";
     
     public const string InternalServerError = "InternalServerError";
 }
