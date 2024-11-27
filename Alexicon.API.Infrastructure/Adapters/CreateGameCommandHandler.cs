@@ -10,7 +10,7 @@ using OneOf;
 
 namespace Alexicon.API.Infrastructure.Adapters;
 
-public class CreateGameCommandHandler : ICommandHandler<CreateGameCommand, OneOf<GameSaved, GameNotSaved>>
+public class CreateGameCommandHandler : CommandHandlerBase, ICommandHandler<CreateGameCommand, OneOf<GameSaved, GameNotSaved>>
 {
     private readonly AlexiconContext _context;
     private readonly IMapper _mapper;
@@ -59,10 +59,5 @@ public class CreateGameCommandHandler : ICommandHandler<CreateGameCommand, OneOf
 
             throw;
         }
-    }
-
-    private async Task HandleRollback(IDbContextTransaction transaction, CancellationToken cancellationToken)
-    {
-        await transaction.RollbackAsync(cancellationToken);
     }
 }
