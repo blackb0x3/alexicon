@@ -40,5 +40,16 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
         {
             return new EntityNotFoundRepresentation("Unable to find game with requested ID.", request.GameId);
         }
+
+        var moveValidationResult = _newMoveValidator.ValidateMove(request, game);
+
+        if (!moveValidationResult.IsValid)
+        {
+            return new InvalidMove
+            {
+                WordsCreated = moveValidationResult.WordsCreated,
+                AttemptedLetters = request.LettersUsed
+            };
+        }
     }
 }
