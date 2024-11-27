@@ -10,6 +10,16 @@ public class MoveValidationResult
     }
 
     public List<WordCreated> WordsCreated { get; set; }
+    
+    public short FirstLetterX { get; set; }
+    
+    public short FirstLetterY { get; set; }
+    
+    public short LastLetterX { get; set; }
+    
+    public short LastLetterY { get; set; }
+    
+    public short Score { get; set; }
 
     public bool IsValid => WordsCreated.All(wc => wc.IsValid);
 }
