@@ -6,7 +6,7 @@ public class GamePlayer
     {
         CurrentRack = [];
     }
-    
+
     public Player Player { get; set; }
 
     public List<char> CurrentRack { get; set; }
