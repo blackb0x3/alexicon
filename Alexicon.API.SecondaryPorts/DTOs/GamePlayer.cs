@@ -9,5 +9,5 @@ public class GamePlayer
     
     public Player Player { get; set; }
 
-    public IReadOnlyCollection<char> CurrentRack { get; set; }
+    public List<char> CurrentRack { get; set; }
 }
