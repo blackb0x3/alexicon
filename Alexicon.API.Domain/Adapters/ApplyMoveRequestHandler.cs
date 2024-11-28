@@ -2,9 +2,11 @@ using Alexicon.API.Domain.PrimaryPorts.ApplyMove;
 using Alexicon.API.Domain.Representations;
 using Alexicon.API.Domain.Representations.Games;
 using Alexicon.API.Domain.Services.Validators;
+using Alexicon.API.SecondaryPorts.Commands.ApplyGameMove;
 using Alexicon.API.SecondaryPorts.DTOs;
 using Alexicon.API.SecondaryPorts.Queries.GetGameById;
 using Alexicon.API.SecondaryPorts.Queries.GetPlayerByUsername;
+using Alexicon.Extensions;
 using MapsterMapper;
 using Mediator;
 using OneOf;
@@ -50,12 +52,16 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
             return new EntityNotFoundRepresentation("Unable to find player with requested username.", request.Player);
         }
 
-        if (!PlayerIsInGame(game, player))
+        var (playerIsInGame, matchingPlayer) = PlayerIsInGame(game, player);
+
+        if (!playerIsInGame)
         {
             return new PlayerNotInGame();
         }
 
-        var moveValidationResult = _newMoveValidator.ValidateMove(request, game);
+        var gameRep = _mapper.Map<GameRepresentation>(game);
+
+        var moveValidationResult = _newMoveValidator.ValidateMove(request, gameRep);
 
         if (!moveValidationResult.IsValid)
         {
@@ -65,10 +71,54 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
                 AttemptedLetters = request.LettersUsed
             };
         }
+
+        if (!request.NewRack.Any())
+        {
+            UpdateCurrentRack(matchingPlayer!, gameRep, request.LettersUsed);
+        }
+
+        var gameMove = new GameMove
+        {
+            Player = matchingPlayer!,
+            FirstLetterX = moveValidationResult.FirstLetterX,
+            FirstLetterY = moveValidationResult.FirstLetterY,
+            LastLetterX = moveValidationResult.LastLetterX,
+            LastLetterY = moveValidationResult.LastLetterY,
+            Score = moveValidationResult.Score,
+            LettersUsed = request.LettersUsed,
+            WordsCreated = moveValidationResult.WordsCreated.Select(wc => wc.Word).ToList()
+        };
+
+        var applyMoveCommand = new ApplyGameMoveCommand(gameGuid, gameMove);
+
+        var applyMoveResult = await _mediator.Send(applyMoveCommand, cancellationToken);
+
+        if (applyMoveResult.IsOfType<ApplyMoveFailure>())
+        {
+            throw new Exception($"Failed to apply move to game: {applyMoveResult.AsT1.Reason}");
+        }
+
+        var updatedGame = await _mediator.Send(new GetGameByIdQuery(gameGuid), cancellationToken);
+
+        return _mapper.Map<GameRepresentation>(updatedGame!);
     }
 
-    private static bool PlayerIsInGame(Game game, Player player)
+    private static void UpdateCurrentRack(GamePlayer gamePlayer, GameRepresentation gameRep, IEnumerable<char> lettersUsed)
     {
-        return game.Players.Any(gp => string.Equals(gp.Player.Username, player.Username));
+        var unusedLetters = gamePlayer.CurrentRack.Except(lettersUsed);
+        var lettersToGet = 7 - unusedLetters.Count();
+
+        if (lettersToGet > 0)
+        {
+            var newLetters = gameRep.State.Bag.PopRandomElements(lettersToGet);
+            gamePlayer.CurrentRack.AddRange(newLetters);
+        }
+    }
+
+    private static (bool, GamePlayer? matchingPlayer) PlayerIsInGame(Game game, Player player)
+    {
+        var matchingPlayer = game.Players.SingleOrDefault(gp => string.Equals(gp.Player.Username, player.Username, StringComparison.OrdinalIgnoreCase));
+
+        return (matchingPlayer is not null, matchingPlayer);
     }
 }

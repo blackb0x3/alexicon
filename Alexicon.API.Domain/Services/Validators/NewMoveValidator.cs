@@ -9,26 +9,12 @@ namespace Alexicon.API.Domain.Services.Validators;
 
 public interface INewMoveValidator
 {
-    MoveValidationResult ValidateMove(ApplyMoveRequest request, Game game);
+    MoveValidationResult ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep);
 }
 
 public class NewMoveValidator : INewMoveValidator
 {
-    private readonly IMapper _mapper;
-
-    public NewMoveValidator(IMapper mapper)
-    {
-        _mapper = mapper;
-    }
-
-    public MoveValidationResult ValidateMove(ApplyMoveRequest request, Game game)
-    {
-        var gameRep = _mapper.Map<GameRepresentation>(game);
-
-        return ApplyMove(gameRep, request);
-    }
-
-    private MoveValidationResult ApplyMove(GameRepresentation gameRep, ApplyMoveRequest request)
+    public MoveValidationResult ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep)
     {
         var result = new MoveValidationResult();
         var intersectableTileLocations = GetIntersectableTileIndices(gameRep.State.Board);
@@ -62,7 +48,7 @@ public class NewMoveValidator : INewMoveValidator
         throw new NotImplementedException();
     }
 
-    private HashSet<(short, short)> GetIntersectableTileIndices(byte[,] board)
+    private static HashSet<(short, short)> GetIntersectableTileIndices(byte[,] board)
     {
         var tileIndices = new HashSet<(short, short)>();
         var boardSize = board.GetLength(0); // Assume the Scrabble board is square
