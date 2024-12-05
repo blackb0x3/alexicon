@@ -1,5 +1,6 @@
 using System.Reflection;
 using Alexicon.API.Domain.Services.Mappers;
+using Alexicon.API.Domain.Services.Validators;
 using FluentValidation;
 using Mapster;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ public class DomainInstaller
 {
     public static void Install(IServiceCollection services, IConfiguration config)
     {
+        services.AddScoped<INewMoveValidator, NewMoveValidator>();
         services.AddValidatorsFromAssembly(DomainAssembly);
         
         AddMapsterConfigurations();
