@@ -13,5 +13,6 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=faf62dc7_002D50ff_002D45f4_002D921b_002D803521853658/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="A_ByteArray_To_JsonArray_Converter" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::3B70CC65-B323-4788-958B-C2526879D90B::net8.0::Alexicon.API.Tests.Converters.A_ByteArray_To_JsonArray_Converter&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3B70CC65-B323-4788-958B-C2526879D90B::net8.0::Alexicon.API.Tests.Mappers.A_GameDto_To_GameRepresentation_Mapper&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

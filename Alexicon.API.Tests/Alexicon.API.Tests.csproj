@@ -34,7 +34,6 @@
     <ItemGroup>
       <Folder Include="Fakes\" />
       <Folder Include="Handlers\" />
-      <Folder Include="Mappers\" />
       <Folder Include="Validators\" />
     </ItemGroup>
 
