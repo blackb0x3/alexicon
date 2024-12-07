@@ -14,5 +14,6 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::3B70CC65-B323-4788-958B-C2526879D90B::net8.0::Alexicon.API.Tests.Converters.A_ByteArray_To_JsonArray_Converter&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::3B70CC65-B323-4788-958B-C2526879D90B::net8.0::Alexicon.API.Tests.Mappers.A_GameDto_To_GameRepresentation_Mapper&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3B70CC65-B323-4788-958B-C2526879D90B::net8.0::Alexicon.API.Tests.Converters.A_ValueTuple_Json_Converter&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
