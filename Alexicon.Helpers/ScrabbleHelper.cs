@@ -55,24 +55,24 @@ public class ScrabbleHelper
     {
         if (x1 == x2)
         {
-            return GetLetterPath(x1, y1, y2);
+            return GetLetterPath(x1, y1, y2, true);
         }
 
         if (y1 == y2)
         {
-            return GetLetterPath(y1, x1, x2);
+            return GetLetterPath(y1, x1, x2, false);
         }
 
         throw new Exception("Unable to determine letter path from coords.");
     }
 
-    private static List<(short, short)> GetLetterPath(short origin, short start, short end)
+    private static List<(short, short)> GetLetterPath(short origin, short start, short end, bool originFirst)
     {
         var path = new List<(short, short)>();
 
         for (var i = start; i <= end; i++)
         {
-            path.Add((origin, i));
+            path.Add(originFirst ? (origin, i) : (i, origin));
         }
 
         return path;
