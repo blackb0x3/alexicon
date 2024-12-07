@@ -25,6 +25,7 @@ builder.Services.Configure<JsonOptions>(opts =>
     opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     opts.JsonSerializerOptions.Converters.Add(new ByteArrayToJsonArrayConverter());
+    opts.JsonSerializerOptions.Converters.Add(new ValueTupleJsonConverter<string, string>());
 });
 ApiInstaller.Install(builder.Services, builder.Configuration);
 
