@@ -36,8 +36,14 @@ public class NewMoveValidator : INewMoveValidator
             foreach (var newWord in wordsCreated)
             {
                 result.WordsCreated.Add(newWord);
+                result.Score += newWord.WordScore;
             }
         }
+
+        result.FirstLetterX = path[0].Item1;
+        result.FirstLetterY = path[0].Item2;
+        result.LastLetterX = path[^1].Item1;
+        result.LastLetterY = path[^1].Item2;
 
         return result;
 
@@ -48,11 +54,12 @@ public class NewMoveValidator : INewMoveValidator
         var wordsCreated = new List<WordCreated>();
         var primaryWord = BuildWordFromPath(path, letters, board);
         wordsCreated.Add(primaryWord);
+        var primaryWordIsVertical = path.All(node => node.Item1 == path.First().Item1);
 
-        // Check for secondary words formed by letters in orthogonal directions
-        foreach (var (x, y) in path)
+        // Build secondary words for each new tile
+        foreach (var (x, y) in primaryWord.NewUsedTiles)
         {
-            var secondaryWord = BuildSecondaryWord(x, y, board);
+            var secondaryWord = BuildSecondaryWord(x, y, board, primaryWord.NewUsedTiles, primaryWordIsVertical);
             if (secondaryWord != null)
             {
                 wordsCreated.Add(secondaryWord);
@@ -64,117 +71,182 @@ public class NewMoveValidator : INewMoveValidator
 
     private WordCreated BuildWordFromPath(List<(short, short)> path, List<char> letters, byte[,] board)
     {
+        short wordScore = 0;
         var word = new char[path.Count];
         var letterIndex = 0;
+        var newUsedTiles = new List<(short, short)>();
 
         for (var i = 0; i < path.Count; i++)
         {
             var (x, y) = path[i];
 
-            // when space is already being occupied
-            if (board[y, x] != 0)
+            if (board[y, x] != 0) // Existing tile
             {
                 word[i] = (char)board[y, x];
             }
-
-            // when space is empty
-            else
+            else // New tile placed during this move
             {
                 word[i] = letters[letterIndex++];
+                newUsedTiles.Add((x, y));
+                board[y, x] = (byte)word[i]; // Update the board with the new tile
+
+                // Apply letter multiplier
+                if (Scrabble.LetterMultiplierLocations.TryGetValue((x, y), out var mult))
+                {
+                    wordScore += Convert.ToInt16(Scrabble.LetterScores[word[i]] * mult);
+                }
+                else
+                {
+                    wordScore += Scrabble.LetterScores[word[i]];
+                }
             }
         }
+
+        // Apply word multipliers for new tiles
+        foreach (var tile in newUsedTiles)
+        {
+            if (Scrabble.WordMultiplierLocations.TryGetValue(tile, out var mult))
+            {
+                wordScore *= mult;
+            }
+        }
+
+        // Apply the 50-point bingo bonus for using all tiles
+        if (letters.Count == 7)
+        {
+            wordScore += 50;
+        }
+
+        var isValidWord = IsValidWord(new string(word));
 
         return new WordCreated
         {
             Word = new string(word),
-            IsValid = IsValidWord(new string(word)), // Assume ValidateWord is implemented elsewhere
-            Reason = IsValidWord(new string(word)) ? null : "InvalidWord"
+            IsValid = isValidWord,
+            Reason = isValidWord ? string.Empty : "InvalidWord",
+            WordScore = wordScore,
+            NewUsedTiles = newUsedTiles
         };
     }
 
-    private WordCreated? BuildSecondaryWord(short x, short y, byte[,] board)
+    private WordCreated? BuildSecondaryWord(short x, short y, byte[,] board, List<(short, short)> newUsedTiles, bool primaryWordIsVertical)
     {
-        var horizontalWord = BuildWordInDirection(x, y, board, 0, -1, 0, 1); // Left and right
-        var verticalWord = BuildWordInDirection(x, y, board, -1, 0, 1, 0); // Up and down
+        var secondaryWord = primaryWordIsVertical
+            ? BuildWordInDirection(x, y, board, -1, 0, 1, 0, newUsedTiles) // Left and right
+            : BuildWordInDirection(x, y, board, 0, -1, 0, 1, newUsedTiles); // Up and down
 
-        if (horizontalWord != null && horizontalWord.Word.Length > 1)
+        // Return the valid word (if any)
+        if (secondaryWord != null && secondaryWord.Word.Length > 1)
         {
-            return horizontalWord;
-        }
-
-        if (verticalWord != null && verticalWord.Word.Length > 1)
-        {
-            return verticalWord;
+            return secondaryWord;
         }
 
         return null;
     }
 
-    private WordCreated? BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2)
+    private WordCreated? BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2, List<(short, short)> newUsedTiles)
     {
         var word = new List<char>();
-        var (x, y) = (startX, startY);
+        short wordScore = 0;
+        var hasNewTile = false;
 
-        // Move in the first direction
-        while (x >= 0 && y >= 0 && x < board.GetLength(0) && y < board.GetLength(1) && board[x, y] != 0)
+        // Move in the first direction (e.g. left or up)
+        var x = startX;
+        var y = startY;
+
+        while (x >= 0 && y >= 0 && x < Scrabble.BoardSize && y < Scrabble.BoardSize && board[y, x] != 0)
         {
-            word.Insert(0, (char)board[x, y]);
+            word.Insert(0, (char)board[y, x]);
+            if (newUsedTiles.Contains((x, y)))
+            {
+                hasNewTile = true;
+
+                // Apply letter multiplier
+                if (Scrabble.LetterMultiplierLocations.TryGetValue((x, y), out var mult))
+                {
+                    wordScore += Convert.ToInt16(Scrabble.LetterScores[(char)board[y, x]] * mult);
+                }
+                else
+                {
+                    wordScore += Scrabble.LetterScores[(char)board[y, x]];
+                }
+            }
+            else
+            {
+                wordScore += Scrabble.LetterScores[(char)board[y, x]];
+            }
+
             x += dx1;
             y += dy1;
         }
 
-        // Reset to the original position and move in the second direction
+        // Reset to move in the second direction (e.g. right or down)
         x = startX;
         y = startY;
 
-        while (x >= 0 && y >= 0 && x < board.GetLength(0) && y < board.GetLength(1) && board[x, y] != 0)
+        while (x >= 0 && y >= 0 && x < Scrabble.BoardSize && y < Scrabble.BoardSize && board[y, x] != 0)
         {
-            if ((x != startX || y != startY)) // Avoid adding the center tile twice
+            if (!newUsedTiles.Contains((x, y)) || x != startX || y != startY) // Avoid duplicate scoring
             {
-                word.Add((char)board[x, y]);
+                word.Add((char)board[y, x]);
+                wordScore += Scrabble.LetterScores[(char)board[y, x]];
             }
 
             x += dx2;
             y += dy2;
         }
 
-        if (word.Count > 1)
+        if (word.Count < 2 || !hasNewTile)
         {
-            var wordString = new string(word.ToArray());
-            return new WordCreated
-            {
-                Word = wordString,
-                IsValid = IsValidWord(wordString),
-                Reason = IsValidWord(wordString) ? string.Empty : "InvalidWord"
-            };
+            return null;
         }
 
-        return null;
+        // Apply word multipliers for new tiles
+        foreach (var tile in newUsedTiles)
+        {
+            if (Scrabble.WordMultiplierLocations.TryGetValue(tile, out var mult))
+            {
+                wordScore *= mult;
+            }
+        }
+
+        var wordString = new string(word.ToArray());
+        var isValid = IsValidWord(wordString);
+
+        return new WordCreated
+        {
+            Word = wordString,
+            IsValid = isValid,
+            Reason = isValid ? string.Empty : "InvalidWord",
+            WordScore = wordScore
+        };
     }
 
     private bool IsValidWord(string word)
     {
-        // TODO Implement the dictionary-based validation here
+        // TODO
+        // add word validation flag to game entity
+        // if flag is not set return false
+        // otherwise, send ValidateWordQuery and return the result
         return true;
     }
 
     private static HashSet<(short, short)> GetIntersectableTileIndices(byte[,] board)
     {
         var tileIndices = new HashSet<(short, short)>();
-        var boardSize = board.GetLength(0); // Assume the Scrabble board is square
 
         var hasTiles = false;
 
-        for (short i = 0; i < boardSize; i++)
+        for (short i = 0; i < Scrabble.BoardSize; i++)
         {
-            for (short j = 0; j < boardSize; j++)
+            for (short j = 0; j < Scrabble.BoardSize; j++)
             {
                 if (board[i, j] != 0)
                 {
                     hasTiles = true;
 
                     // Add adjacent empty tiles with boundary checks
-                    if (i + 1 < boardSize && board[i + 1, j] == 0)
+                    if (i + 1 < Scrabble.BoardSize && board[i + 1, j] == 0)
                     {
                         tileIndices.Add(((short)(i + 1), j));
                     }
@@ -184,7 +256,7 @@ public class NewMoveValidator : INewMoveValidator
                         tileIndices.Add(((short)(i - 1), j));
                     }
 
-                    if (j + 1 < boardSize && board[i, j + 1] == 0)
+                    if (j + 1 < Scrabble.BoardSize && board[i, j + 1] == 0)
                     {
                         tileIndices.Add((i, (short)(j + 1)));
                     }
