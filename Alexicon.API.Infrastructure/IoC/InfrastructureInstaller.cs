@@ -23,6 +23,25 @@ public class InfrastructureInstaller
 
     private static void AddMapsterConfigurations()
     {
+        TypeAdapterConfig<SecondaryPorts.DTOs.Player, Entities.Player>.NewConfig()
+            .PreserveReference(true);
+
+        TypeAdapterConfig<SecondaryPorts.DTOs.GamePlayer, Entities.GamePlayer>.NewConfig()
+            .Map(dest => dest.Player, src => src.Player)
+            .Map(dest => dest.CurrentRack, src => src.CurrentRack)
+            .PreserveReference(false);
+
+        TypeAdapterConfig<SecondaryPorts.DTOs.GameMove, Entities.GameMove>.NewConfig()
+            .Map(dest => dest.Player, src => src.Player)
+            .Map(dest => dest.LettersUsed, src => src.LettersUsed)
+            .Map(dest => dest.WordsCreated, src => src.WordsCreated)
+            .PreserveReference(false);
+
+        TypeAdapterConfig<SecondaryPorts.DTOs.Game, Entities.Game>.NewConfig()
+            .Map(dest => dest.Players, src => src.Players.ToList().AsReadOnly())
+            .Map(dest => dest.MovesPlayed, src => src.MovesPlayed.ToList().AsReadOnly())
+            .PreserveReference(false);
+
         TypeAdapterConfig<Entities.Player, SecondaryPorts.DTOs.Player>.NewConfig()
             .PreserveReference(true);
 
