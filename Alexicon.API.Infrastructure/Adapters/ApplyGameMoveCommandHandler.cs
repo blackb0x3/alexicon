@@ -21,15 +21,15 @@ public class ApplyGameMoveCommandHandler : CommandHandlerBase, ICommandHandler<A
 
     public async ValueTask<OneOf<ApplyMoveSuccess, ApplyMoveFailure>> Handle(ApplyGameMoveCommand command, CancellationToken cancellationToken)
     {
-        var game = await _context.Games.SingleAsync(g => g.Id == command.GameId, cancellationToken);
-        var gamePlayer = await _context.GamePlayers.SingleAsync(gp => gp.GameId == command.GameId && gp.PlayerUsername == command.NewMove.Player.Player.Username, cancellationToken);
-        var mappedGameMove = _mapper.Map<GameMove>(command.NewMove);
-        mappedGameMove.Player = gamePlayer;
-
         var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
+            var game = await _context.Games.SingleAsync(g => g.Id == command.GameId, cancellationToken);
+            var gamePlayer = await _context.GamePlayers.SingleAsync(gp => gp.GameId == command.GameId && gp.PlayerUsername == command.NewMove.Player.Player.Username, cancellationToken);
+            gamePlayer.CurrentRack = command.NewMove.Player.CurrentRack;
+            var mappedGameMove = _mapper.Map<GameMove>(command.NewMove);
+            mappedGameMove.Player = gamePlayer;
             game.MovesPlayed.Add(mappedGameMove);
 
             await _context.SaveChangesAsync(cancellationToken);
