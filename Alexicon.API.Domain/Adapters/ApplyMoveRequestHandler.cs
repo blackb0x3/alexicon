@@ -71,11 +71,8 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
                 AttemptedLetters = request.LettersUsed
             };
         }
-
-        if (!request.NewRack.Any())
-        {
-            UpdateCurrentRack(matchingPlayer!, gameRep, request.LettersUsed);
-        }
+        
+        UpdateCurrentRack(matchingPlayer!, gameRep, request.LettersUsed, request.NewRack);
 
         var gameMove = new GameMove
         {
@@ -103,16 +100,18 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
         return _mapper.Map<GameRepresentation>(updatedGame!);
     }
 
-    private static void UpdateCurrentRack(GamePlayer gamePlayer, GameRepresentation gameRep, IEnumerable<char> lettersUsed)
+    private static void UpdateCurrentRack(GamePlayer gamePlayer, GameRepresentation gameRep, IEnumerable<char> lettersUsed, List<char> newRack)
     {
-        var unusedLetters = gamePlayer.CurrentRack.Except(lettersUsed);
-        var lettersToGet = 7 - unusedLetters.Count();
-
-        if (lettersToGet > 0)
+        if (!newRack.Any())
         {
+            var unusedLetters = gamePlayer.CurrentRack.Except(lettersUsed).ToList();
+            newRack.AddRange(unusedLetters);
+            var lettersToGet = 7 - unusedLetters.Count;
             var newLetters = gameRep.State.Bag.PopRandomElements(lettersToGet);
-            gamePlayer.CurrentRack.AddRange(newLetters);
+            newRack.AddRange(newLetters);
         }
+
+        gamePlayer.CurrentRack = newRack;
     }
 
     private static (bool, GamePlayer? matchingPlayer) PlayerIsInGame(Game game, Player player)
