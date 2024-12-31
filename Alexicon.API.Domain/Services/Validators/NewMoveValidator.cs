@@ -31,7 +31,7 @@ public class NewMoveValidator : INewMoveValidator
         }
         else
         {
-            var wordsCreated = GetNewWords(request.LettersUsed, path, gameRep.State.Board);
+            var wordsCreated = GetNewWords(request.LettersUsed, path, gameRep.State.Board, gameRep.ValidateNewWords);
 
             foreach (var newWord in wordsCreated)
             {
@@ -49,17 +49,17 @@ public class NewMoveValidator : INewMoveValidator
 
     }
 
-    private List<WordCreated> GetNewWords(List<char> letters, List<(short, short)> path, byte[,] board)
+    private List<WordCreated> GetNewWords(List<char> letters, List<(short, short)> path, byte[,] board, bool shouldValidateNewWords)
     {
         var wordsCreated = new List<WordCreated>();
-        var primaryWord = BuildWordFromPath(path, letters, board);
+        var primaryWord = BuildWordFromPath(path, letters, board, shouldValidateNewWords);
         wordsCreated.Add(primaryWord);
         var primaryWordIsVertical = path.All(node => node.Item1 == path.First().Item1);
 
         // Build secondary words for each new tile
         foreach (var (x, y) in primaryWord.NewUsedTiles)
         {
-            var secondaryWord = BuildSecondaryWord(x, y, board, primaryWord.NewUsedTiles, primaryWordIsVertical);
+            var secondaryWord = BuildSecondaryWord(x, y, board, primaryWord.NewUsedTiles, primaryWordIsVertical, shouldValidateNewWords);
             if (secondaryWord != null)
             {
                 wordsCreated.Add(secondaryWord);
@@ -69,7 +69,7 @@ public class NewMoveValidator : INewMoveValidator
         return wordsCreated;
     }
 
-    private WordCreated BuildWordFromPath(List<(short, short)> path, List<char> letters, byte[,] board)
+    private WordCreated BuildWordFromPath(List<(short, short)> path, List<char> letters, byte[,] board, bool shouldValidateNewWords)
     {
         short wordScore = 0;
         var word = new char[path.Count];
@@ -117,7 +117,7 @@ public class NewMoveValidator : INewMoveValidator
             wordScore += 50;
         }
 
-        var isValidWord = IsValidWord(new string(word));
+        var isValidWord = shouldValidateNewWords && IsValidWord(new string(word));
 
         return new WordCreated
         {
@@ -129,11 +129,11 @@ public class NewMoveValidator : INewMoveValidator
         };
     }
 
-    private WordCreated? BuildSecondaryWord(short x, short y, byte[,] board, List<(short, short)> newUsedTiles, bool primaryWordIsVertical)
+    private WordCreated? BuildSecondaryWord(short x, short y, byte[,] board, List<(short, short)> newUsedTiles, bool primaryWordIsVertical, bool shouldValidateNewWords)
     {
         var secondaryWord = primaryWordIsVertical
-            ? BuildWordInDirection(x, y, board, -1, 0, 1, 0, newUsedTiles) // Left and right
-            : BuildWordInDirection(x, y, board, 0, -1, 0, 1, newUsedTiles); // Up and down
+            ? BuildWordInDirection(x, y, board, -1, 0, 1, 0, newUsedTiles, shouldValidateNewWords) // Left and right
+            : BuildWordInDirection(x, y, board, 0, -1, 0, 1, newUsedTiles, shouldValidateNewWords); // Up and down
 
         // Return the valid word (if any)
         if (secondaryWord != null && secondaryWord.Word.Length > 1)
@@ -144,7 +144,7 @@ public class NewMoveValidator : INewMoveValidator
         return null;
     }
 
-    private WordCreated? BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2, List<(short, short)> newUsedTiles)
+    private WordCreated? BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2, List<(short, short)> newUsedTiles, bool shouldValidateNewWords)
     {
         var word = new List<char>();
         short wordScore = 0;
@@ -211,7 +211,7 @@ public class NewMoveValidator : INewMoveValidator
         }
 
         var wordString = new string(word.ToArray());
-        var isValid = IsValidWord(wordString);
+        var isValid = shouldValidateNewWords && IsValidWord(wordString);
 
         return new WordCreated
         {
