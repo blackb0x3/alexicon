@@ -8,6 +8,8 @@ public class GameRepresentation
     }
     
     public Guid Id { get; set; }
+
+    public bool ValidateNewWords { get; set; }
     
     public GameStateRepresentation State { get; set; }
 
