@@ -3,6 +3,7 @@ using System;
 using Alexicon.API.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexicon.API.Infrastructure.Migrations
 {
     [DbContext(typeof(AlexiconContext))]
-    partial class AlexiconContextModelSnapshot : ModelSnapshot
+    [Migration("20241231223716_Add_ValidateNewWords_To_Game")]
+    partial class Add_ValidateNewWords_To_Game
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");

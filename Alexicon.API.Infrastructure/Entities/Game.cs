@@ -10,6 +10,8 @@ public class Game : BaseEntity
 
     public Guid Id { get; set; }
 
+    public bool ValidateNewWords { get; set; }
+
     public virtual ICollection<GamePlayer> Players { get; set; }
 
     public virtual ICollection<GameMove> MovesPlayed { get; set; }

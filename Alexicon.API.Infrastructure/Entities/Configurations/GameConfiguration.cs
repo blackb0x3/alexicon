@@ -9,6 +9,10 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
     public void Configure(EntityTypeBuilder<Game> builder)
     {
         builder.HasKey(g => g.Id);
+        
+        builder.Property(g => g.ValidateNewWords)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder
             .HasMany(g => g.Players)
