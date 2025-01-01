@@ -61,7 +61,7 @@ public class ApplyMoveRequestHandler : IRequestHandler<ApplyMoveRequest, OneOf<G
 
         var gameRep = _mapper.Map<GameRepresentation>(game);
 
-        var moveValidationResult = _newMoveValidator.ValidateMove(request, gameRep);
+        var moveValidationResult = await _newMoveValidator.ValidateMove(request, gameRep, cancellationToken);
 
         if (!moveValidationResult.IsValid)
         {
