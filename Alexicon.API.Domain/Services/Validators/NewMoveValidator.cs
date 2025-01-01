@@ -2,19 +2,28 @@ using Alexicon.API.Domain.Models;
 using Alexicon.API.Domain.PrimaryPorts.ApplyMove;
 using Alexicon.API.Domain.Representations.Games;
 using Alexicon.API.SecondaryPorts.DTOs;
+using Alexicon.API.SecondaryPorts.Queries.GetWordDefinition;
 using Alexicon.Helpers;
 using MapsterMapper;
+using Mediator;
 
 namespace Alexicon.API.Domain.Services.Validators;
 
 public interface INewMoveValidator
 {
-    MoveValidationResult ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep);
+    Task<MoveValidationResult> ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep, CancellationToken cancellationToken);
 }
 
 public class NewMoveValidator : INewMoveValidator
 {
-    public MoveValidationResult ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep)
+    private readonly IMediator _mediator;
+
+    public NewMoveValidator(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    public async Task<MoveValidationResult> ValidateMove(ApplyMoveRequest request, GameRepresentation gameRep, CancellationToken cancellationToken)
     {
         var result = new MoveValidationResult();
         var intersectableTileLocations = GetIntersectableTileIndices(gameRep.State.Board);
@@ -31,9 +40,9 @@ public class NewMoveValidator : INewMoveValidator
         }
         else
         {
-            var wordsCreated = GetNewWords(request.LettersUsed, path, gameRep.State.Board, gameRep.ValidateNewWords);
+            var wordsCreated = GetNewWords(request.LettersUsed, path, gameRep.State.Board, gameRep.ValidateNewWords, cancellationToken);
 
-            foreach (var newWord in wordsCreated)
+            await foreach (var newWord in wordsCreated)
             {
                 result.WordsCreated.Add(newWord);
                 result.Score += newWord.WordScore;
@@ -49,27 +58,25 @@ public class NewMoveValidator : INewMoveValidator
 
     }
 
-    private List<WordCreated> GetNewWords(List<char> letters, List<(short, short)> path, byte[,] board, bool shouldValidateNewWords)
+    private async IAsyncEnumerable<WordCreated> GetNewWords(List<char> letters, List<(short, short)> path, byte[,] board, bool shouldValidateNewWords, CancellationToken cancellationToken)
     {
-        var wordsCreated = new List<WordCreated>();
-        var primaryWord = BuildWordFromPath(path, letters, board, shouldValidateNewWords);
-        wordsCreated.Add(primaryWord);
+        var primaryWord = await BuildWordFromPath(path, letters, board, shouldValidateNewWords, cancellationToken);
         var primaryWordIsVertical = path.All(node => node.Item1 == path.First().Item1);
+        yield return primaryWord;
 
         // Build secondary words for each new tile
         foreach (var (x, y) in primaryWord.NewUsedTiles)
         {
-            var secondaryWord = BuildSecondaryWord(x, y, board, primaryWord.NewUsedTiles, primaryWordIsVertical, shouldValidateNewWords);
+            var secondaryWord = await BuildSecondaryWord(x, y, board, primaryWord.NewUsedTiles, primaryWordIsVertical, shouldValidateNewWords, cancellationToken);
+
             if (secondaryWord != null)
             {
-                wordsCreated.Add(secondaryWord);
+                yield return secondaryWord;
             }
         }
-
-        return wordsCreated;
     }
 
-    private WordCreated BuildWordFromPath(List<(short, short)> path, List<char> letters, byte[,] board, bool shouldValidateNewWords)
+    private async Task<WordCreated> BuildWordFromPath(List<(short, short)> path, List<char> letters, byte[,] board, bool shouldValidateNewWords, CancellationToken cancellationToken)
     {
         short wordScore = 0;
         var word = new char[path.Count];
@@ -117,7 +124,7 @@ public class NewMoveValidator : INewMoveValidator
             wordScore += 50;
         }
 
-        var isValidWord = shouldValidateNewWords && IsValidWord(new string(word));
+        var isValidWord = shouldValidateNewWords && await IsValidWord(new string(word), cancellationToken);
 
         return new WordCreated
         {
@@ -129,11 +136,11 @@ public class NewMoveValidator : INewMoveValidator
         };
     }
 
-    private WordCreated? BuildSecondaryWord(short x, short y, byte[,] board, List<(short, short)> newUsedTiles, bool primaryWordIsVertical, bool shouldValidateNewWords)
+    private async Task<WordCreated?> BuildSecondaryWord(short x, short y, byte[,] board, List<(short, short)> newUsedTiles, bool primaryWordIsVertical, bool shouldValidateNewWords, CancellationToken cancellationToken)
     {
         var secondaryWord = primaryWordIsVertical
-            ? BuildWordInDirection(x, y, board, -1, 0, 1, 0, newUsedTiles, shouldValidateNewWords) // Left and right
-            : BuildWordInDirection(x, y, board, 0, -1, 0, 1, newUsedTiles, shouldValidateNewWords); // Up and down
+            ? await BuildWordInDirection(x, y, board, -1, 0, 1, 0, newUsedTiles, shouldValidateNewWords, cancellationToken) // Left and right
+            : await BuildWordInDirection(x, y, board, 0, -1, 0, 1, newUsedTiles, shouldValidateNewWords, cancellationToken); // Up and down
 
         // Return the valid word (if any)
         if (secondaryWord != null && secondaryWord.Word.Length > 1)
@@ -144,7 +151,7 @@ public class NewMoveValidator : INewMoveValidator
         return null;
     }
 
-    private WordCreated? BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2, List<(short, short)> newUsedTiles, bool shouldValidateNewWords)
+    private async Task<WordCreated?> BuildWordInDirection(short startX, short startY, byte[,] board, short dx1, short dy1, short dx2, short dy2, List<(short, short)> newUsedTiles, bool shouldValidateNewWords, CancellationToken cancellationToken)
     {
         var word = new List<char>();
         short wordScore = 0;
@@ -211,7 +218,7 @@ public class NewMoveValidator : INewMoveValidator
         }
 
         var wordString = new string(word.ToArray());
-        var isValid = shouldValidateNewWords && IsValidWord(wordString);
+        var isValid = shouldValidateNewWords && await IsValidWord(wordString, cancellationToken);
 
         return new WordCreated
         {
@@ -222,13 +229,12 @@ public class NewMoveValidator : INewMoveValidator
         };
     }
 
-    private bool IsValidWord(string word)
+    private async Task<bool> IsValidWord(string word, CancellationToken cancellationToken)
     {
-        // TODO
-        // add word validation flag to game entity
-        // if flag is not set return false
-        // otherwise, send ValidateWordQuery and return the result
-        return true;
+        var query = new GetWordDefinitionQuery(word);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return result.IsScrabbleWord;
     }
 
     private static HashSet<(short, short)> GetIntersectableTileIndices(byte[,] board)
